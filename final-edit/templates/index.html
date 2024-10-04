@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            margin-bottom: 20px;
+            margin-top: 250px;
+        }
+        form {
+            margin: 15px 0;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 300px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 15px;
+            color: white;
+            background-color: blue;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkblue;
+        }
+        h2 {
+            margin-top: 30px;
+        }
+        .topics {
+            max-width: 300px;
+            text-align: left;
+        }
+        .audio-btn {
+            background-color: rgb(56, 112, 255);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 10px;
+            border-radius: 4px;
+        }
+        .audio-btn:hover {
+            background-color: darkgreen;
+        }
+    </style>
+</head>
+<body>
+    <br><br>
+    <br><br>
+    <br><br>
+    <h1>Paragraph Retrieval System</h1>
+
+    <h2>Upload Document</h2>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".docx" required>
+        <input type="text" id="chapter_name" name="chapter_name" placeholder="Chapter Name" required>
+        <input type="number" id="chapter_no" name="chapter_no" placeholder="Chapter Number" required>
+        <button type="submit">Upload Document</button>
+    </form>
+    <h4 class="text-center mt-4">View Extracted Data</h4>
+        <div class="text-center">
+            <a href="{{ url_for('fetch_data') }}" class="btn btn-info">Fetch Paragraph Data</a>
+        </div>
+
+    <h2>Search for Paragraphs by Keyword</h2>
+    <form action="/search" method="post">
+        <input type="text" id="keyword" name="keyword" placeholder="Enter keyword" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <h2>Retrieve Paragraph by Page and Number</h2>
+    <form action="/retrieve" method="post">
+        <input type="number" id="page_no" name="page_no" placeholder="Page Number" required><br>
+        <input type="number" id="paragraph_no" name="paragraph_no" placeholder="Paragraph Number" required><br>
+        <button type="submit">Retrieve</button>
+    </form>
+
+    <h2>Count Word Occurrences in Document</h2>
+    <form action="/word-count" method="post">
+        <input type="text" id="word_to_find" name="word_to_find" placeholder="Enter word to count" required>
+        <button type="submit">Count Word</button>
+    </form>
+
+    <h2>Select Topics to Translate</h2>
+    <form action="/trans" method="post" enctype="multipart/form-data">
+        <div class="topics">
+            {% for topic in topics %}
+                <input type="checkbox" name="topics" value="{{ topic }}">{{ topic }}<br>
+            {% endfor %}
+        </div>
+        <button type="submit">Translate</button>
+    </form>
+
+    <button class="audio-btn" onclick="startVoiceCommands()">Start Voice Control 🎤</button>
+
+    <form action="/truncate" method="post">
+        <button  type="submit">Truncate DB</button>
+    </form> 
+
+    <script>
+        function startVoiceCommands() {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.toLowerCase();
+                console.log("Recognized text:", transcript);
+                handleCommand(transcript);
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Recognition error:', event.error);
+                alert("Error occurred during speech recognition.");
+            };
+
+            recognition.start();
+        }
+
+        function handleCommand(command) {
+            // Handle commands like "search for [keyword]"
+            if (command.includes('search for')) {
+                const keyword = command.split('search for')[1].trim();
+                document.getElementById('keyword').value = keyword;
+                document.querySelector('form[action="/search"]').submit();
+            }
+            // Handle "Get para [x] from page [y]"
+            else if (command.includes('get para') && command.includes('from page')) {
+                const para = command.match(/para\s*(\d+)/i);
+                const page = command.match(/page\s*(\d+)/i);
+                if (para && page) {
+                    document.getElementById('paragraph_no').value = para[1];
+                    document.getElementById('page_no').value = page[1];
+                    document.querySelector('form[action="/retrieve"]').submit();
+                }
+            }
+            // Handle "Count word [word]"
+            else if (command.includes('count word')) {
+                const word = command.split('count word')[1].trim();
+                document.getElementById('word_to_find').value = word;
+                document.querySelector('form[action="/word-count"]').submit();
+            }
+            // Handle translation: "Translate [topics]"
+            else if (command.includes('translate')) {
+                const topics = document.querySelectorAll('.topics input[type="checkbox"]');
+                topics.forEach((topic) => {
+                    if (command.includes(topic.value.toLowerCase())) {
+                        topic.checked = true;
+                    }
+                });
+                document.querySelector('form[action="/trans"]').submit();
+            } else {
+                alert("Command not recognized. Please try again.");
+            }
+        }
+    </script>
+
+</body>
+</html>

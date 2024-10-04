@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paragraphs Data</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Extracted Paragraphs</h2>
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                   
+                    <th>Page No</th>
+                    <th>Paragraph No</th>
+                    <th>Paragraph</th>
+                    <th>Audio Path</th>
+                    <th>Chapter Name</th>
+                    <th>Chapter No</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                  
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                    <td><a href="{{ row[3] }}" target="_blank">Play Audio</a></td>
+                    <td>{{ row[4] }}</td>
+                    <td>{{ row[5] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-center">
+            <a href="{{ url_for('upload_file') }}" class="btn btn-primary">Go Back to Upload Page</a>
+        </div>
+    </div>
+</body>
+</html>

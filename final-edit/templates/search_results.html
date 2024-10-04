@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            width: 100%;
+            text-align: left; /* Left-align text */
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: left; /* Left-align heading */
+        }
+
+        .result {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #444;
+            margin-bottom: 10px;
+            text-align: left; /* Left-align paragraph */
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            audio {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Search Results</h1>
+        {% for result in results %}
+            <div class="result">
+                <p>{{ result[0] }}</p> <!-- Display paragraph -->
+                <audio controls>
+                    <source src="{{ result[1] }}" type="audio/mpeg"> <!-- Audio path -->
+                    Your browser does not support the audio tag.
+                </audio>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

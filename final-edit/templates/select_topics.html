@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Topics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: left; /* Align text to the left */
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: left; /* Left align heading */
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            margin: 20px 0 10px;
+            color: #007bff;
+            text-align: left; /* Left align file names */
+        }
+
+        .topics {
+            margin-bottom: 30px;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        label {
+            font-size: 1rem;
+            color: #555;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            h3 {
+                font-size: 1rem;
+            }
+
+            button {
+                padding: 10px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Select Topics to Translate</h1>
+        <form action="/select-topics" method="post">
+            <div class="file-selection">
+                <label for="file">Choose a file:</label>
+                <select id="file" name="file_name">
+                    <option value="">--Select File(s)--</option>
+                    {% for file_name in topics.keys() %}
+                        <option value="{{ file_name }}">{{ file_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        
+            <div class="topics">
+                {% for file_name, topics_list in topics.items() %}
+                    <div class="topics-section" id="topics-{{ file_name }}" style="display:none;">
+                        <h3>{{ file_name }}</h3>
+                        {% for topic in topics_list %}
+                            <label>
+                                <input type="checkbox" name="topics" value="{{ topic }}">
+                                {{ topic }}
+                            </label><br>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <button type="submit">Translate Selected Topics</button>
+        </form>
+        
+        <script>
+            const fileSelect = document.getElementById('file');
+            const topicsSections = document.querySelectorAll('.topics-section');
+        
+            // Function to toggle the display of topics based on selected file
+            fileSelect.addEventListener('change', function() {
+                const selectedFiles = Array.from(fileSelect.selectedOptions).map(option => option.value);
+                
+                topicsSections.forEach(section => {
+                    // Check if the section's id (file name) is in the selected files
+                    if (selectedFiles.includes(section.id.replace('topics-', ''))) {
+                        section.style.display = 'block'; // Show the topics for the selected file
+                    } else {
+                        section.style.display = 'none'; // Hide the topics for unselected files
+                    }
+                });
+            });
+        </script>
+        
+    </div>
+</body>
+</html>
